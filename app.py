@@ -35,9 +35,13 @@ st.markdown("""
 # --- Tesseract Configuration ---
 # Function to determine if running on Streamlit Cloud or Local Windows
 def configure_tesseract():
-    # If on Linux (Streamlit Cloud), Tesseract is usually at /usr/bin/tesseract
+    # If on Linux (Streamlit Cloud / Render), Tesseract is usually at /usr/bin/tesseract
+    if sys.platform.startswith('linux'):
+        pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
+    
     # If on Windows, it might be in Program Files.
     if sys.platform.startswith('win'):
+        # Common default installation path on Windows
         # Common default installation path on Windows
         sub_paths = [
             r"C:\Program Files\Tesseract-OCR\tesseract.exe",
