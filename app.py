@@ -33,38 +33,32 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- Tesseract Configuration ---
-# Function to determine if running on Streamlit Cloud or Local Windows
-def configure_tesseract():
-    # If on Linux (Streamlit Cloud / Render), Tesseract is usually at /usr/bin/tesseract
-    if sys.platform.startswith('linux'):
-        pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
-    
-    # If on Windows, it might be in Program Files.
-    if sys.platform.startswith('win'):
-        # Common default installation path on Windows
-        # Common default installation path on Windows
-        sub_paths = [
-            r"C:\Program Files\Tesseract-OCR\tesseract.exe",
-            r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
-             os.path.join(os.getenv('LOCALAPPDATA', ''), r'Tesseract-OCR\tesseract.exe')
-        ]
-        found = False
-        for path in sub_paths:
-            if os.path.exists(path):
-                pytesseract.pytesseract.tesseract_cmd = path
-                found = True
-                break
-        if not found:
-            # Fallback or warning
-            # Trying 'tesseract' command in PATH
-            try:
-                import subprocess
-                subprocess.run(['tesseract', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            except FileNotFoundError:
-                st.warning("Windowsで実行中ですが、Tesseractが見つかりません。インストールされているか確認してください。")
-    # On Linux, usually no need to set cmd if in PATH, which packages.txt should handle.
+# Set Tesseract path explicitly for Linux (Render/Streamlit Cloud)
+if sys.platform.startswith('linux'):
+    pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
-configure_tesseract()
+# For Windows, try to find it in common locations
+if sys.platform.startswith('win'):
+    sub_paths = [
+        r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+        r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+        os.path.join(os.getenv('LOCALAPPDATA', ''), r'Tesseract-OCR\tesseract.exe')
+    ]
+    found = False
+    for path in sub_paths:
+        if os.path.exists(path):
+            pytesseract.pytesseract.tesseract_cmd = path
+            found = True
+            break
+    
+    if not found:
+        # Fallback: check if 'tesseract' is in PATH
+        try:
+            import subprocess
+            subprocess.run(['tesseract', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except FileNotFoundError:
+            # We will show a warning later in the UI if needed, or just let it fail naturally
+            pass
 
 def correct_orientation(image):
     """

@@ -15,9 +15,11 @@
     -   **Build Command**: Leave blank (Docker handles this).
     -   **Start Command**: Leave blank (defined in `CMD` of Dockerfile).
     -   **Plan**: Free.
+    -   **Note**: The repository includes a `Dockerfile` specifically optimized for Render, installing Tesseract and all necessary system libraries.
+
 4.  **Advanced (Env Vars)**:
-    -   Render automatically sets `PORT`, which our Dockerfile uses.
-    -   No other env vars are strictly required unless you added API keys.
+    -   Render automatically sets `PORT`.
+    -   We explicitly set `ENV PATH="/usr/bin:$PATH"` in the Dockerfile, so no extra config needed here.
 5.  **Deploy**: Click "Create Web Service".
 
 ## Troubleshooting
