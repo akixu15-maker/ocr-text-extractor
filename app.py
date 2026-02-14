@@ -123,8 +123,9 @@ if image_file is not None:
             max_size = (800, 800)
             image.thumbnail(max_size, Image.Resampling.LANCZOS)
 
-        # Display the image
-        st.image(image, caption=f'入力画像 ({image.size[0]}x{image.size[1]})', use_container_width=True)
+        # Display the image (Natural size, not stretched)
+        # Use columns to center or control size if needed, but here simple st.image with use_column_width=False
+        st.image(image, caption=f'入力画像 ({image.size[0]}x{image.size[1]})', use_container_width=False)
 
         if st.button("テキストを抽出する", type="primary"):
             with st.spinner('テキストを抽出中...'):
