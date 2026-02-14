@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pytesseract
 from PIL import Image, ExifTags
 import numpy as np
@@ -19,6 +20,12 @@ st.set_page_config(
         'About': "無料のオンラインOCRツールです。Tesseract OCRを使用しています。"
     }
 )
+
+# --- AdSense Script Injection (Head) ---
+components.html("""
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4443417103189902"
+     crossorigin="anonymous"></script>
+""", height=0)
 
 # --- SEO & AdSense Meta Tags (Injected via Markdown) ---
 st.markdown("""
@@ -146,6 +153,21 @@ if image_file is not None:
                     if text.strip():
                         st.success("抽出成功！")
                         st.text_area("抽出されたテキスト (コピー用)", value=text, height=300)
+
+                        # --- AdSense Ad Unit (Below Results) ---
+                        st.markdown("---")
+                        st.caption("広告")
+                        components.html("""
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-4443417103189902"
+                             data-ad-slot="YOUR_AD_UNIT_ID_HERE"  <!-- Replace with your Ad Unit ID from AdSense Dashboard -->
+                             data-ad-format="auto"
+                             data-full-width-responsive="true"></ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                        """, height=250)
                     else:
                         st.warning("テキストが検出されませんでした。画像が明瞭か確認してください。")
                 
@@ -161,12 +183,19 @@ if image_file is not None:
 # --- Footer / Extras ---
 st.markdown("---")
 
-# AdSense Placeholder
-st.markdown("""
-<div id="adsense-placeholder" style="background-color: #f0f0f0; padding: 20px; text-align: center; border: 1px dashed #ccc; margin-bottom: 20px;">
-    <p style="color: #666;">広告スペース (Google AdSense)</p>
-</div>
-""", unsafe_allow_html=True)
+# AdSense Footer Unit
+st.caption("広告")
+components.html("""
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-4443417103189902"
+     data-ad-slot="YOUR_AD_UNIT_ID_HERE"  <!-- Replace with your Ad Unit ID from AdSense Dashboard -->
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+""", height=250)
 
 # Privacy Policy
 st.markdown("---")
