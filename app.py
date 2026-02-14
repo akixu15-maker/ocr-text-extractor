@@ -92,6 +92,10 @@ if input_method == "画像アップロード":
     image_file = st.file_uploader("画像をアップロード (JPG, PNG)", type=['jpg', 'png', 'jpeg'])
 else:
     image_file = st.camera_input("カメラで撮影")
+    st.info("💡 ヒント: 文字が鮮明に写るように撮影してください。暗い場所や手ブレにご注意ください。")
+
+# --- Processing Options ---
+high_quality = st.checkbox("高精度モード (画質優先)", value=True, help="オンにすると、画像を縮小せずに元の解像度でOCR処理を行います。処理に時間がかかる場合がありますが、精度が向上します。")
 
 # --- OCR Processing ---
 if image_file is not None:
@@ -112,8 +116,15 @@ if image_file is not None:
         # Correct orientation based on EXIF data
         image = correct_orientation(image)
 
+        # High Quality Mode Logic
+        if not high_quality:
+            # Resize for speed if high quality is not requested
+            # Max dimension 800px
+            max_size = (800, 800)
+            image.thumbnail(max_size, Image.Resampling.LANCZOS)
+
         # Display the image
-        st.image(image, caption='入力画像', use_container_width=True)
+        st.image(image, caption=f'入力画像 ({image.size[0]}x{image.size[1]})', use_container_width=True)
 
         if st.button("テキストを抽出する", type="primary"):
             with st.spinner('テキストを抽出中...'):
