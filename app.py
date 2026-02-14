@@ -1,6 +1,6 @@
 import streamlit as st
 import pytesseract
-from PIL import Image
+from PIL import Image, ExifTags
 import numpy as np
 import cv2
 import sys
@@ -55,6 +55,29 @@ def configure_tesseract():
 
 configure_tesseract()
 
+def correct_orientation(image):
+    """
+    Corrects the orientation of an image based on its EXIF data.
+    """
+    try:
+        for orientation in ExifTags.TAGS.keys():
+            if ExifTags.TAGS[orientation] == 'Orientation':
+                exif = image._getexif()
+                if exif is not None:
+                    exif = dict(exif.items())
+                    if orientation in exif:
+                        orientation_value = exif[orientation]
+                        if orientation_value == 3:
+                            image = image.rotate(180, expand=True)
+                        elif orientation_value == 6:
+                            image = image.rotate(270, expand=True)
+                        elif orientation_value == 8:
+                            image = image.rotate(90, expand=True)
+                        break
+    except Exception:
+        pass
+    return image
+
 # --- UI Layout ---
 
 st.title("📷 無料OCRツール")
@@ -86,6 +109,9 @@ if image_file is not None:
         image = None
 
     if image is not None:
+        # Correct orientation based on EXIF data
+        image = correct_orientation(image)
+
         # Display the image
         st.image(image, caption='入力画像', use_container_width=True)
 
